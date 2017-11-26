@@ -21,16 +21,7 @@ conda install scipy -y
 conda install coverage -y 
 # conda install libgfortran -c conda-forge -y
 
-cat >$HOME/.amberrc <<EOF
-Name = travis-build
-Institution = travis
-City = travis
-State or Province = travis
-Country = travis
-EOF
-
-export SKIP_REGISTRATION=1
-conda install ambertools=17 -c hainm/label/dev -y
+conda install ambertools=17 -c http://ambermd.org/downloads/ambertools/conda/ -y
 conda install ipywidgets -c conda-forge -y
 conda install nglview -c bioconda -y
 

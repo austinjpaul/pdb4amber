@@ -5,7 +5,10 @@ import subprocess
 from itertools import chain
 import argparse
 import parmed
-from .compat import StringIO
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from io import StringIO
 from .leap_runner import _make_leap_template
 from .utils import easy_call
 
@@ -648,7 +651,7 @@ def run(
     return ns_names, gaplist, sslist
 
 
-def main():
+def main(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "input",
@@ -764,7 +767,7 @@ def main():
         help="Not write S-S conect record")
     parser.add_argument(
         "--noter", action='store_true', dest="noter", help="Not writing TER")
-    opt = parser.parse_args()
+    opt = parser.parse_args(argv)
 
     # pdbin : {str, file object, parmed.Structure}
     if opt.version:

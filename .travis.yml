@@ -3,7 +3,6 @@ language: cpp
 matrix:
   include:
      - { os: linux, env: PYTHON_VERSION=2.7 }
-     - { os: linux, env: PYTHON_VERSION=2.7 NO_SETUPTOOLS=True} # for amber
      - { os: linux, env: PYTHON_VERSION=3.5 } 
      - { os: linux, env: PYTHON_VERSION=3.6 }
 
@@ -29,6 +28,7 @@ install:
 script:
     - reduce -Version
     - tleap -h
+    - pdb4amber -v
     - which AddToBox
     - source devtools/ci/run_tests.sh
 

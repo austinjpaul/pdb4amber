@@ -2,6 +2,7 @@ import unittest
 import subprocess
 from pdb4amber.pdb4amber import StringIO
 from pdb4amber import AmberPDBFixer, run
+from pdb4amber import main
 import parmed as pmd
 
 # local
@@ -192,3 +193,8 @@ def test_packmol():
 def test_to_increase_coverage():
     from pdb4amber.utils import amberbin
     assert not amberbin('hello_there')
+
+
+def test_leap_template():
+    pdb_fh = get_fn('2igd/2igd.pdb')
+    main([pdb_fh, '--leap-template'])

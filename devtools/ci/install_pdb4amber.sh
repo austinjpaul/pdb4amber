@@ -1,7 +1,5 @@
 #!/bin/sh
 
-if [ "$NO_SETUPTOOLS" = "True" ]; then
-   python setup.py install --no-setuptools
-else
-   pip install . -v --upgrade
-fi
+# change folder to avoid remove source code. ack.
+(cd tests && rm -rf `python -c "import pdb4amber; import os; print(os.path.dirname(pdb4amber.__file__))"`)
+python setup.py install

@@ -1,5 +1,3 @@
-#! /usr/bin/env phenix.python
-
 # Romain M. Wolf, NIBR Basel, December 2013
 # with revisions by Pawel Janowski & Jason Swails, Rutgers U., Feb. 2014
 #    & Jan. 2015
