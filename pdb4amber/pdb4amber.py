@@ -31,7 +31,7 @@ from .residue import (
 
 from .utils import tempfolder, amberbin
 
-__version__ = '1.3'
+__version__ = '1.6.dev'
 
 
 class AmberPDBFixer(object):
@@ -598,6 +598,7 @@ def run(
     else:
         # keep all models
         write_kwargs = dict()
+    write_kwargs['increase_tercount'] = False # so CONECT record can work properly
     if not arg_keep_altlocs:
         if sumdict['has_altlocs']:
             logger.info('The alternate coordinates have been discarded.')

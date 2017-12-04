@@ -32,14 +32,13 @@ def test_write_model():
 
     # default
     with tempfolder():
-        subprocess.check_call(['pdb4amber', '1l2y', '--pdbid', '-o', pdb_out])
+        pdb4amber.main(['1l2y', '--pdbid', '-o', pdb_out])
         parm = pmd.load_file(pdb_out)
         assert parm.get_coordinates().shape == (1, 304, 3)
 
     # model 1
     with tempfolder():
-        subprocess.check_call(
-            ['pdb4amber', '1l2y', '--pdbid', '-o', pdb_out, '--model', '1'])
+        pdb4amber.main(['1l2y', '--pdbid', '-o', pdb_out, '--model', '1'])
         parm = pmd.load_file(pdb_out)
         assert parm.get_coordinates().shape == (1, 304, 3)
         np.testing.assert_almost_equal(parm.coordinates,
@@ -48,8 +47,7 @@ def test_write_model():
     # model 2
     model = 2
     with tempfolder():
-        subprocess.check_call([
-            'pdb4amber', '1l2y', '--pdbid', '-o', pdb_out, '--model',
+        pdb4amber.main(['1l2y', '--pdbid', '-o', pdb_out, '--model',
             str(model)
         ])
         parm = pmd.load_file(pdb_out)
@@ -65,8 +63,7 @@ def test_keep_all_model():
 
     # default
     with tempfolder():
-        subprocess.check_call(
-            ['pdb4amber', '1l2y', '--pdbid', '-o', pdb_out, '--model', '-1'])
+        pdb4amber.main(['1l2y', '--pdbid', '-o', pdb_out, '--model', '-1'])
         parm = pmd.load_file(pdb_out)
         assert parm.get_coordinates().shape == (38, 304, 3)
 
@@ -74,14 +71,14 @@ def test_keep_all_model():
 def test_dry():
     option = '--dry'
     pdb_out = 'out.pdb'
-    command = ['pdb4amber', '-i', pdb_fn, '-o', pdb_out, option]
+    command = ['-i', pdb_fn, '-o', pdb_out, option]
 
     with tempfolder():
         orig_parm = pmd.load_file(pdb_fn)
         resnames = set(res.name for res in orig_parm.residues)
         assert resnames.intersection(WATER_NAMES)
 
-        subprocess.check_call(command)
+        pdb4amber.main(command)
         parm = pmd.load_file(pdb_out)
         resnames = set(res.name for res in parm.residues)
         assert not resnames.intersection(WATER_NAMES)
@@ -98,15 +95,15 @@ def test_not_write_sslink_conect_record():
 
     # has conect
     with tempfolder():
-        command = ['pdb4amber', '-i', pdb_fn, '-o', pdb_out]
-        subprocess.check_call(command)
+        command = ['-i', pdb_fn, '-o', pdb_out]
+        pdb4amber.main(command)
         with open(pdb_out) as fh:
             assert 'CONECT' in fh.read()
 
     # no conect
     with tempfolder():
-        command = ['pdb4amber', '-i', pdb_fn, '-o', pdb_out, '--no-conect']
-        subprocess.check_call(command)
+        command = ['-i', pdb_fn, '-o', pdb_out, '--no-conect']
+        pdb4amber.main(command)
         with open(pdb_out) as fh:
             assert 'CONECT' not in fh.read()
 
@@ -114,33 +111,43 @@ def test_not_write_sslink_conect_record():
 def test_write_sslink():
     pdb_out = 'out.pdb'
     pdb_fn = get_fn('4lzt/4lzt_h.pdb')
-    command = ['pdb4amber', '-i', pdb_fn, '-o', pdb_out]
+    command = ['-i', pdb_fn, '-o', pdb_out]
     sslink_name = 'out_sslink'
     sslink_pair = [(6, 127), (30, 115), (64, 80), (76, 94)]
 
     with tempfolder():
-        subprocess.check_call(command)
+        pdb4amber.main(command)
         with open(sslink_name) as fh:
             for index, line in enumerate(fh):
                 id0, idx1 = [int(i) for i in line.split()]
                 assert (id0, idx1) == sslink_pair[index]
 
 
+def test_write_conect():
+    pdb_out = 'out.pdb'
+    pdb_fn = get_fn('1dwc.pdb')
+    command = ['-i', pdb_fn, '-o', pdb_out]
+    with tempfolder():
+        pdb4amber.main(command)
+        with open(pdb_out) as fh:
+            assert 'ATOM   1196  SG  CYX H 148      55.729  28.382  19.687  1.00 10.07' in fh.read()
+
+
 def test_constantph():
     option = '--constantph'
     pdb_out = 'out.pdb'
-    command = ['pdb4amber', '-i', pdb_fn, '-o', pdb_out, option]
+    command = ['-i', pdb_fn, '-o', pdb_out, option]
 
     with tempfolder():
         # just run to increase code coverage
         # we already test in another file
-        subprocess.check_call(command)
+        pdb4amber.main(command)
 
 
 def test_no_hydrogen():
     option = '--nohyd'
     pdb_out = 'out.pdb'
-    command = ['pdb4amber', '-i', pdb_fn, '-o', pdb_out, option]
+    command = ['-i', pdb_fn, '-o', pdb_out, option]
 
     with tempfolder():
         orig_parm = pmd.load_file(pdb_fn)
@@ -148,7 +155,7 @@ def test_no_hydrogen():
                          if atom.atomic_number == 1)
         assert atom_names
 
-        subprocess.check_call(command)
+        pdb4amber.main(command)
         parm = pmd.load_file(pdb_out)
         atom_names = set(atom.name for atom in parm.atoms
                          if atom.atomic_number == 1)
@@ -158,7 +165,7 @@ def test_no_hydrogen():
 def test_prot_only():
     option = '--pro'
     pdb_out = 'out.pdb'
-    command = ['pdb4amber', '-i', pdb_fn, '-o', pdb_out, option]
+    command = ['-i', pdb_fn, '-o', pdb_out, option]
 
     with tempfolder():
         orig_parm = pmd.load_file(pdb_fn)
@@ -166,7 +173,7 @@ def test_prot_only():
         assert 'NO3' in res_names
         assert 'HOH' in res_names
 
-        subprocess.check_call(command)
+        pdb4amber.main(command)
         parm = pmd.load_file(pdb_out)
         res_names = set(res.name for res in parm.residues)
         assert 'NO3' not in res_names
@@ -176,14 +183,14 @@ def test_prot_only():
 def test_writing_renum():
     pdb_fn = get_fn('2igd/2igd_2_residues.pdb')
     pdb_out = 'out.pdb'
-    command = ['pdb4amber', pdb_fn]
+    command = [pdb_fn]
     expected_lines = """
 MET     1    MET     1
 PRO     3    PRO     2
     """.strip().split('\n')
 
     with tempfolder():
-        subprocess.check_call(command)
+        pdb4amber.main(command)
         with open('stdout_renum.txt') as fh:
             output_lines = [line.strip() for line in fh.readlines()]
             assert expected_lines == output_lines
@@ -193,7 +200,7 @@ def test_reduce_with_pdb_input():
     option = '--reduce'
     pdb_fn = get_fn('2igd/2igd.pdb')
     pdb_out = 'out.pdb'
-    command = ['pdb4amber', '-i', pdb_fn, '-o', pdb_out, option]
+    command = ['-i', pdb_fn, '-o', pdb_out, option]
 
     with tempfolder():
         orig_parm = pmd.load_file(pdb_fn)
@@ -201,7 +208,7 @@ def test_reduce_with_pdb_input():
                          if atom.atomic_number == 1)
         assert not atom_names
 
-        subprocess.check_call(command)
+        pdb4amber.main(command)
         parm = pmd.load_file(pdb_out)
         atom_names = set(atom.name for atom in parm.atoms
                          if atom.atomic_number == 1)
@@ -211,9 +218,9 @@ def test_reduce_with_pdb_input():
 def test_strip_atoms():
     pdb_fn = get_fn('2igd/2igd.cif')
     pdb_out = 'out.pdb'
-    command = ['pdb4amber', '-i', pdb_fn, '-o', pdb_out, '--strip', ':3-500']
+    command = ['-i', pdb_fn, '-o', pdb_out, '--strip', ':3-500']
     with tempfolder():
-        subprocess.check_call(command)
+        pdb4amber.main(command)
         parm = pmd.load_file(pdb_out)
         assert len(parm.residues) == 2
 
@@ -222,10 +229,10 @@ def test_reduce_with_cif_input():
     option = '--reduce'
     pdb_fn = get_fn('2igd/2igd.cif')
     pdb_out = 'out.pdb'
-    command = ['pdb4amber', '-i', pdb_fn, '-o', pdb_out, option]
+    command = ['-i', pdb_fn, '-o', pdb_out, option]
 
     with tempfolder():
-        subprocess.check_call(command)
+        pdb4amber.main(command)
         parm = pmd.load_file(pdb_out)
         atom_names = set(atom.name for atom in parm.atoms
                          if atom.atomic_number == 1)
@@ -390,6 +397,20 @@ def get_num_ters(fn):
             if line.startswith("TER"):
                 num_ters += 1
     return num_ters
+
+def test_noter():
+    pdb_fh = get_fn('2igd/2igd.pdb')
+    parm = pmd.load_file(pdb_fh)
+    parm_gap = parm[':1,3']
+
+    with tempfolder():
+        fn = 'gap.pdb'
+        noter_fn = 'noter.pdb'
+        parm_gap.save(fn)
+        assert get_num_ters(fn) == 2
+        output = subprocess.check_output(
+            ['pdb4amber', fn, '--noter', '-o', noter_fn])
+        assert get_num_ters(noter_fn) == 0
 
 
 def test_noter():
