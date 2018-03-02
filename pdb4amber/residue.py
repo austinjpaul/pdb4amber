@@ -36,7 +36,6 @@ __all__ = [
     'RESPROT', 'RESNA', 'RESSOLV', 'RESSUGAR', 'AMBER_SUPPORTED_RESNAMES'
 ]
 
-# TODO: nucleic acid
 # 
 HEAVY_ATOM_DICT = {
     'ALA': 5,
@@ -75,7 +74,7 @@ RESPROT = ('ALA', 'ARG', 'ASN', 'ASP', 'CYS', 'GLN', 'GLU', 'GLY', 'HIS',
            'TYR', 'VAL', 'HID', 'HIE', 'HIN', 'HIP', 'CYX', 'ASH', 'GLH',
            'LYH', 'ACE', 'NME', 'GL4', 'AS4')
 
-RESNA = ('C', 'G', 'U', 'A', 'DC', 'DG', 'DT', 'DA')
+RESNA = ('C', 'G', 'U', 'A', 'DC', 'DG', 'DT', 'DA', 'OHE' )
 
 RESSOLV = ('WAT', 'HOH', 'AG', 'AL', 'Ag', 'BA', 'BR', 'Be', 'CA', 'CD', 'CE',
            'CL', 'CO', 'CR', 'CS', 'CU', 'CU1', 'Ce', 'Cl-', 'Cr', 'Dy', 'EU',
