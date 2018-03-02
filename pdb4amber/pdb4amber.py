@@ -497,12 +497,15 @@ def run(
     # optionally run reduce on input file
     if isinstance(pdbin, parmed.Structure):
         parm = pdbin
-    elif hasattr(pdbin, 'read'):
-        # StringIO
-        # need to use read_PDB
-        parm = parmed.read_PDB(pdbin)
     else:
-        parm = parmed.load_file(pdbin)
+        # Use read_PDB() if load_file() doesn't recognize the format:
+        #   allows for input files with some non-standard elements
+        try:
+            parm = parmed.load_file(pdbin)
+        except parmed.exceptions.FormatNotFound:
+            sys.stderr.write('Warning: input file may not be a PDB file!\n')
+            sys.stderr.write('         trying to process it as one anyway.\n')
+            parm = parmed.read_PDB(pdbin)
 
     pdbfixer = AmberPDBFixer(parm)
 
