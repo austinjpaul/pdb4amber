@@ -503,7 +503,7 @@ def run(
     else:
         try:
             parm = parmed.load_file(pdbin)
-        except parmed.exceptions.FormatNotFound:
+        except (parmed.exceptions.FormatNotFound, IndexError):
             sys.stderr.write('Warning: input file may not be a PDB file!\n')
             sys.stderr.write('         trying to process it as one anyway.\n')
             # go back to read_PDB
