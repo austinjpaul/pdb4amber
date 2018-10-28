@@ -246,7 +246,7 @@ class AmberPDBFixer(object):
         cys_cys_set : Set[List[int, int]]
         """
         residues = [
-            res for res in self.parm.residues if res.name in ['CYS', 'CYX']
+            res for res in self.parm.residues if res.name in ['CYS', 'CYX', 'CYM']
         ]
 
         cys_cys_resid_set = set()
