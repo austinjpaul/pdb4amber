@@ -383,11 +383,6 @@ class AmberPDBFixer(object):
         stringio_file.seek(0)
         lines = stringio_file.readlines()
 
-        if noter:
-            for line in lines:
-                if line.startswith("TER"):
-                    lines.remove(line)
-
         # TODO: update ParmEd?
         if disulfide_conect:
             conect_record = [
@@ -398,9 +393,7 @@ class AmberPDBFixer(object):
             lines[-1] = conect_str + 'END\n'
 
         if noter:
-            for line in lines:
-                if line.startswith("TER"):
-                    lines.remove(line)
+            lines = [line for line in lines if not line.startswith("TER")]
 
         stringio_file_out.writelines(lines)
         stringio_file_out.seek(0)
