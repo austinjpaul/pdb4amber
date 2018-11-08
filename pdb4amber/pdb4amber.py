@@ -114,7 +114,7 @@ class AmberPDBFixer(object):
         -------
         parm : updated `parm`
         '''
-        amber_his_names = set(['HID', 'HIE' 'HIP'])
+        amber_his_names = set(['HID', 'HIE', 'HIP'])
         possible_names = set([
             'HIS',
         ]) | amber_his_names
