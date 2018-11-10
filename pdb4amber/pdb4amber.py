@@ -183,6 +183,9 @@ class AmberPDBFixer(object):
                 pass
         return self
 
+    def find_non_protein_residues(self):
+        return set(res.name for res in self.parm.residues if res.name not in RESPROT)
+
     def find_gaps(self):
         # TODO: doc
         # report original resnum?
@@ -192,18 +195,20 @@ class AmberPDBFixer(object):
         gaplist = []
         parm = self.parm
 
-        #  N.B.: following only finds gaps in protein chains!
+        # N.B.: following only finds gaps in protein chains!
+        # H.N: Assume that residue has all 3 atoms: CA, C, and N  
+        respro_nocap = set(RESPROT) - {'ACE', 'NME'}
         for i, atom in enumerate(parm.atoms):
             # TODO: if using 'CH3', this will be failed with 
             # ACE ALA ALA ALA NME system
             # if atom.name in ['CA', 'CH3'] and atom.residue.name in RESPROT:
             if atom.name in [
                     'CA',
-            ] and atom.residue.name in RESPROT:
+            ] and atom.residue.name in respro_nocap:
                 CA_atoms.append(i)
-            if atom.name == 'C' and atom.residue.name in RESPROT:
+            if atom.name == 'C' and atom.residue.name in respro_nocap:
                 C_atoms.append(i)
-            if atom.name == 'N' and atom.residue.name in RESPROT:
+            if atom.name == 'N' and atom.residue.name in respro_nocap:
                 N_atoms.append(i)
 
         nca = len(CA_atoms)
@@ -277,7 +282,7 @@ class AmberPDBFixer(object):
             residue = self.parm.residues[index]
             residue.name = 'CYX'
 
-    def find_non_starndard_resnames(self):
+    def find_non_standard_resnames(self):
         ns_names = set()
         for residue in self.parm.residues:
             if len(residue.name) > 3:
@@ -417,6 +422,7 @@ class AmberPDBFixer(object):
             for atom in residue.atoms:
                 if atom.other_locations:
                     alt_residues.add(residue)
+
         # chain
         logger.info('\n----------Chains')
         logger.info('The following (original) chains have been found:')
@@ -518,7 +524,9 @@ def run(
     # find non-standard Amber residues:===================================
     #   TODO: why does the following call discard the return array of
     #         non-standard residue names?
-    ns_names = pdbfixer.find_non_starndard_resnames()
+    ns_names = pdbfixer.find_non_standard_resnames()
+    logger.info("-----------Non-standard-resnames")
+    logger.info(", ".join(ns_names))
 
     ns_mask = ':' + ','.join(ns_names)
     ns_mask_filename = base_filename + '_nonprot.pdb'
@@ -529,7 +537,7 @@ def run(
             fh.write("")
 
     # if arg_elbow:
-    #     ns_names = find_non_starndard_resnames_elbow(parm)
+    #     ns_names = find_non_standard_resnames_elbow(parm)
 
     # keep only protein:==================================================
     if arg_prot:

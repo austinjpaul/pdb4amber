@@ -85,7 +85,7 @@ def test_find_non_standard_resnames():
     fn = get_fn('4lzt/4lzt_h.pdb')
     parm = pmd.load_file(fn)
     pdbfixer = AmberPDBFixer(parm)
-    assert pdbfixer.find_non_starndard_resnames() == {'NO3'}
+    assert pdbfixer.find_non_standard_resnames() == {'NO3'}
 
 
 def test_run_with_StringIO_log():
@@ -148,10 +148,12 @@ def test_find_gaps():
 
 
 def test_find_gaps_nogap():
-    pdb_fh = get_fn('2igd/2igd_4tleap_uc.pdb')
-    parm = pmd.load_file(pdb_fh)
-    pdbfixer = AmberPDBFixer(parm)
-    assert not pdbfixer.find_gaps()
+    def get_fixer(fname):
+        pdb_fh = get_fn(fname)
+        parm = pmd.load_file(pdb_fh)
+        return AmberPDBFixer(parm)
+    assert not get_fixer(get_fn('2igd/2igd_4tleap_uc.pdb')).find_gaps()
+    assert not get_fixer(get_fn('ace-ala2-nme.pdb')).find_gaps()
 
 
 # @unittest.skipUnless(_has_program('tleap'), "Must has tleap")

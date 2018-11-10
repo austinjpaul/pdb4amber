@@ -21,7 +21,7 @@ try:
     # check internet
     pmd.download_PDB('1l2y')
     internet_ok = True
-except OSError:
+except IOError:
     internet_ok = False
 
 
